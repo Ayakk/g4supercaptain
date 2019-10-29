@@ -1,0 +1,23 @@
+gok = input("Voor nog een hint type 'hint'\nUw gok: ")
+punten = 25
+
+def hint_geven(punten,gok):
+    hint_vragen = 'hint'
+    hint_lijst = []
+    aantal = 0
+    bestand_met_antwoord = open('antwoord.txt','r')
+    antwoord = bestand_met_antwoord.readlines()
+    with open('lijst_met_hints.txt','r') as bestand_met_hints:
+        for hints in bestand_met_hints.readlines():
+            hint = hints.split('\n')
+            hint_lijst.append(hint[0])
+        while aantal >= 0:
+            if hint_vragen in gok:
+                print(hint_lijst[aantal])
+                aantal += 1
+            for goed_antwoord in antwoord:
+                if goed_antwoord == gok:
+                    print('Dat is het goede antwoord! Uw heeft een score van', punten, 'punten.')
+                break
+
+hint_geven(punten,gok)
