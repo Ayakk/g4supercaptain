@@ -3,15 +3,16 @@ import hashlib
 import requests
 import time
 import random
-#Dit maakt verbinding met de Marvel server om informatie op te halen
+
+# Dit maakt verbinding met de Marvel server om informatie op te halen
 
 public_key = '4948dd2ad64f8a47c7e882325121c4b2'
 private_key = 'c8a4085bf1d97e3f1d3615f458986467ed40009a'
-timestamp = str(time.time()) # pakt huidige tijd
-hash_material = timestamp+private_key+public_key #zet de tijd, private key en public key als 1 string
-pre_hashed = hashlib.md5(hash_material.encode()) #bovenstaaande string converted to bytecode
-hashed = pre_hashed.hexdigest()# hier wordt de MD5 hash gegenereerd
-character_random_interval = str(random.randint(100, 2000)) #zorgt ervoor dat de set gekozen characters random blijven
+timestamp = str(time.time())  # pakt huidige tijd
+hash_material = timestamp + private_key + public_key  # zet de tijd, private key en public key als 1 string
+pre_hashed = hashlib.md5(hash_material.encode())  # bovenstaaande string converted to bytecode
+hashed = pre_hashed.hexdigest()  # hier wordt de MD5 hash gegenereerd
+character_random_interval = str(random.randint(100, 2000))  # zorgt ervoor dat de set gekozen characters random blijven
 character_limit = "100"
 param = {"ts": timestamp,
          'apikey': '4948dd2ad64f8a47c7e882325121c4b2',
@@ -20,18 +21,19 @@ param = {"ts": timestamp,
          "offset": character_random_interval
          }
 
-#hash - a md5 digest of the ts parameter, your private key and your public key (e.g. md5(ts+privateKey+publicKey)
 
-#API↓↓
+# hash - a md5 digest of the ts parameter, your private key and your public key (e.g. md5(ts+privateKey+publicKey)
 
-def getMarvelCharacter():#maakt verbinding met de marvel server en haalt een aantal superheroes op
+# API↓↓
+
+def getMarvelCharacter():  # maakt verbinding met de marvel server en haalt een aantal superheroes op
     url = 'https://gateway.marvel.com:443/v1/public/characters'
     response = requests.get(url, params=param)
     response = response.json()
     text = json.dumps(response, indent=4)
     with open('characters.txt', 'w+') as f:
         f.write(text)
-    with open('characters.txt','r') as f:
+    with open('characters.txt', 'r') as f:
         text = json.load(f)
     teller = 0
     begin_character_lijst = []
@@ -44,12 +46,14 @@ def getMarvelCharacter():#maakt verbinding met de marvel server en haalt een aan
     einde_character_lijst.append(begin_character_lijst[random.randint(0, (len(begin_character_lijst) - 1))])
     return einde_character_lijst
 
-def getMarvelCharacterHint(character_lijst): #pakt 1 random superheroe met de criteria "has description"
+
+def getMarvelCharacterHint(character_lijst):  # pakt 1 random superheroe met de criteria "has description"
     character_hint = character_lijst[0]["description"]
     character_hint = character_hint.split(",")
     return character_hint
 
-#API↑↑
+
+# API↑↑
 
 def goed():
     global punten
@@ -57,6 +61,7 @@ def goed():
     totaal_punten += punten
     punten = 25
     return totaal_punten
+
 
 def fout():
     global punten
@@ -67,12 +72,14 @@ def fout():
         punten -= 1
         return punten
 
+
 def highscorefile():
     highscore = open("SuperGuesserHighscore.txt", "a")
     highscore.write(speler_naam)
     highscore.write(": ")
     highscore.write(str(punten))
     highscore.write("\n")
+
 
 def hint_geven():
     global punten
@@ -104,25 +111,34 @@ def hint_geven():
             punten -= 3
             print("Jouw score : {}".format(punten))
 
+
 doorgaan_spel = True
 punten = 25
 totaal_punten = 0
 
 character_info = getMarvelCharacter()
-character_names = character_info[0]["name"].split('/') #voorkomt dat de menselijke naam van de superheroe ook met de superhero naam komt (bijv.Clark Kent)
+character_names = character_info[0]["name"].split('/')  # voorkomt dat de menselijke naam van de superheroe ook met de superhero naam komt (bijv.Clark Kent)
 character_name = character_names[0]
+if "(" in character_name:
+    character_name = character_name.split(" (", "")
+if type(character_name) == 'list':
+    character_name = character_name[0]
 
 character_hints = getMarvelCharacterHint(character_info)
+verwijder_name_hint = ""
+for i in range(0,len(character_hints)):
+    if character_name in character_hints[i]:
+        character_hints[i] = character_hints[i].replace(character_name, "Hero")
 
 
-#Vraagt naar naam van speler
+# Vraagt naar naam van speler
 while True:
     speler_naam = input("Wat is jouw naam? ")
     if len(speler_naam) >= 2:
         break
     print("Naam niet lang genoeg")
 print(character_name)
-print("Jouw eerste hint(gratis):"+character_hints[0])
+print("Jouw eerste hint(gratis):" + character_hints[0])
 character_hints.pop(0)
 while punten > 0:
     antwoord = input("Welke superheld is het?")
