@@ -11,7 +11,7 @@ timestamp = str(time.time()) # pakt huidige tijd
 hash_material = timestamp+private_key+public_key #zet de tijd, private key en public key als 1 string
 pre_hashed = hashlib.md5(hash_material.encode()) #bovenstaaande string converted to bytecode
 hashed = pre_hashed.hexdigest()# hier wordt de MD5 hash gegenereerd
-character_random_interval = str(random.randint(100, 500)) #zorgt ervoor dat de set gekozen characters random blijven
+character_random_interval = str(random.randint(100, 2000)) #zorgt ervoor dat de set gekozen characters random blijven
 character_limit = "100"
 param = {"ts": timestamp,
          'apikey': '4948dd2ad64f8a47c7e882325121c4b2',
@@ -36,9 +36,8 @@ def getMarvelCharacter():#maakt verbinding met de marvel server en haalt een aan
     teller = 0
     begin_character_lijst = []
     einde_character_lijst = []
-
     for i in text["data"]["results"]:
-        if text["data"]["results"][teller]["description"] != "":
+        if len(text["data"]["results"][teller]["description"]) > 2:
             begin_character_lijst.append(text["data"]["results"][teller])
         teller += 1
 
@@ -47,11 +46,10 @@ def getMarvelCharacter():#maakt verbinding met de marvel server en haalt een aan
 
 def getMarvelCharacterHint(character_lijst): #pakt 1 random superheroe met de criteria "has description"
     character_hint = character_lijst[0]["description"]
+    character_hint = character_hint.split(",")
+    return character_hint
 
 #API↑↑
-
-punten = 25
-totaal_punten = 0
 
 def goed():
     global punten
@@ -69,14 +67,6 @@ def fout():
         punten -= 1
         return punten
 
-def hint():
-    global punten
-    if punten < 3:
-        return print('Je hebt niet genoeg punten')
-    else:
-        punten -= 3
-        return punten
-
 def highscorefile():
     highscore = open("SuperGuesserHighscore.txt", "a")
     highscore.write(speler_naam)
@@ -84,12 +74,45 @@ def highscorefile():
     highscore.write(str(punten))
     highscore.write("\n")
 
+def hint_geven():
+    global punten
+    global character_hints
+    if len(character_hints) == 0:
+        print("Er zijn geen hints meer. U moet een gokje wagen")
+        return 0
+    elif punten <= 3:
+        print('U heeft te weinig punten om een hint te vragen. U moet een gokje wagen\n')
+        return 0
+    else:
+        print(character_hints[0])
+        character_hints.pop(0)
+        punten -= 3
+    print("Jouw score : {}".format(punten))
+    while True:
+        aanvraag_hint = input("Wilt u nog een hint? ja of nee\n")
+        if aanvraag_hint not in "jahint":
+            break
+        elif punten <= 3:
+            print('U heeft te weinig punten om een hint te vragen. U moet een gokje wagen')
+            break
+        elif len(character_hints) == 0:
+            print("Er zijn geen hints meer. U moet een gokje wagen")
+            break
+        else:
+            print(character_hints[0])
+            character_hints.pop(0)
+            punten -= 3
+            print("Jouw score : {}".format(punten))
+
+doorgaan_spel = True
+punten = 25
+totaal_punten = 0
 
 character_info = getMarvelCharacter()
 character_names = character_info[0]["name"].split('/') #voorkomt dat de menselijke naam van de superheroe ook met de superhero naam komt (bijv.Clark Kent)
 character_name = character_names[0]
 
-getMarvelCharacterHint(character_info)
+character_hints = getMarvelCharacterHint(character_info)
 
 
 #Vraagt naar naam van speler
@@ -98,18 +121,20 @@ while True:
     if len(speler_naam) >= 2:
         break
     print("Naam niet lang genoeg")
+print(character_name)
+print("Jouw eerste hint(gratis):"+character_hints[0])
+character_hints.pop(0)
 while punten > 0:
-        antwoord = input("Welke superheld is het?")
-        #eerste hint hoort hier (Daniel en Frank)
-
-        if antwoord != "jan":
-            fout()
-            print("Jouw score : {}".format(punten))
-
-        elif antwoord == "jan":
-            print("Gefeliciteerd, je antwoord is correct!")
-            highscorefile()
-            break
+    antwoord = input("Welke superheld is het?")
+    if antwoord == "hint":
+        hint_geven()
+    elif antwoord != character_name:
+        fout()
+        print("Jouw score : {}".format(punten))
+    elif antwoord == character_name:
+        print("Gefeliciteerd, je antwoord is correct!")
+        highscorefile()
+        break
 
 if punten == 0:
     print('Helaas je hebt verloren.')
