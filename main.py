@@ -78,7 +78,7 @@ def hint():
         return punten
 
 def highscorefile():
-    highscore = open("SuperGuesserHighscore.txt", "w")
+    highscore = open("SuperGuesserHighscore.txt", "a")
     highscore.write(speler_naam)
     highscore.write(": ")
     highscore.write(str(punten))
