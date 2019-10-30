@@ -22,6 +22,8 @@ param = {"ts": timestamp,
 
 #hash - a md5 digest of the ts parameter, your private key and your public key (e.g. md5(ts+privateKey+publicKey)
 
+#API↓↓
+
 def getMarvelCharacter():#maakt verbinding met de marvel server en haalt een aantal superheroes op
     url = 'https://gateway.marvel.com:443/v1/public/characters'
     response = requests.get(url, params=param)
@@ -45,6 +47,8 @@ def getMarvelCharacter():#maakt verbinding met de marvel server en haalt een aan
 
 def getMarvelCharacterHint(character_lijst): #pakt 1 random superheroe met de criteria "has description"
     character_hint = character_lijst[0]["description"]
+
+#API↑↑
 
 punten = 25
 totaal_punten = 0
@@ -73,6 +77,14 @@ def hint():
         punten -= 3
         return punten
 
+def highscorefile():
+    highscore = open("SuperGuesserHighscore.txt", "w")
+    highscore.write(speler_naam)
+    highscore.write(": ")
+    highscore.write(str(punten))
+    highscore.write("\n")
+
+
 character_info = getMarvelCharacter()
 character_names = character_info[0]["name"].split('/') #voorkomt dat de menselijke naam van de superheroe ook met de superhero naam komt (bijv.Clark Kent)
 character_name = character_names[0]
@@ -96,6 +108,9 @@ while punten > 0:
 
         elif antwoord == "jan":
             print("Gefeliciteerd, je antwoord is correct!")
+            highscorefile()
             break
 
-print('Helaas je hebt verloren.')
+if punten == 0:
+    print('Helaas je hebt verloren.')
+    highscorefile()
