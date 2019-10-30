@@ -1,5 +1,11 @@
 from tkinter import *
-from tkinter.ttk import *
+
+def pakNaam():
+    username_entry = naaminput.get()
+    stringvoorlabel = "Uw naam is " + username_entry
+    labelusername = Label(gui,text=stringvoorlabel, font="Arial 12 bold")
+    labelusername.place(x=40, y=700)
+    return username_entry
 
 gui = Tk()
 gui.title("ReverseAkinator")
@@ -9,16 +15,10 @@ punten = 25
 
 scoredict = {}
 
-
-def pakNaam():
-    username_entry = naaminput.get()
-    stringvoorlabel = "Uw naam is " + username_entry
-    labelusername = Label(gui,text=stringvoorlabel, font="Arial 12 bold")
-    labelusername.place(x=40, y=700)
-
 #GEEF JE NAAM
-naaminput = Entry(gui, text="Voer je username in ").place(x=500, y=500)
-naambutton = Button(gui, text="Voer in", command=pakNaam()).place(x=600, y=500)
+naaminput = Entry(gui, text="Voer je username in ")
+naaminput.place(x=500, y=500)
+naambutton = Button(gui, text="Voer in", command=pakNaam).place(x=600, y=500)
 
 #MAAK DE WIDGETS
 score = Label(gui, text=punten, font="Arial 12").place(x=0, y=0)
