@@ -2,7 +2,6 @@ import json
 import hashlib
 import requests
 import time
-import datetime
 import random
 #Dit maakt verbinding met de Marvel server om informatie op te halen
 
@@ -76,9 +75,10 @@ def hint():
 
 character_info = getMarvelCharacter()
 character_names = character_info[0]["name"].split('/') #voorkomt dat de menselijke naam van de superheroe ook met de superhero naam komt (bijv.Clark Kent)
-character_name = "test" #character_names[0]
+character_name = character_names[0]
 
 getMarvelCharacterHint(character_info)
+
 
 #Vraagt naar naam van speler
 while True:
@@ -86,27 +86,16 @@ while True:
     if len(speler_naam) >= 2:
         break
     print("Naam niet lang genoeg")
+while punten > 0:
+        antwoord = input("Welke superheld is het?")
+        #eerste hint hoort hier (Daniel en Frank)
 
-while True:
-    antwoord = input("Welke superheld is het?")
-    #eerste hint hoort hier (Daniel en Frank)
+        if antwoord != "jan":
+            fout()
+            print("Jouw score : {}".format(punten))
 
-    if punten == 25 and antwoord == character_name:
-        goed()
-        print('Goed bezig!')
-        print("Jouw score : {}".format(punten))
-        break
-    elif antwoord != character_name:
-        fout()
-        print("Jouw score : {}".format(punten))
-    elif antwoord == character_name:
-        print("Jouw score : {}".format(punten))
-        break
+        elif antwoord == "jan":
+            print("Gefeliciteerd, je antwoord is correct!")
+            break
 
-print("Gefeliciteerd, je antwoord is correct!")
-
-#highscore in bestand opnemen
-datum = str(datetime.date.today())
-player_score = str(punten)+':'+speler_naam+':'+ datum
-with open('highscore.txt', 'a+') as f:
-    f.write(player_score)
+print('Helaas je hebt verloren.')
