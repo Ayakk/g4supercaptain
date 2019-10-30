@@ -41,7 +41,8 @@ def getMarvelCharacter():#maakt verbinding met de marvel server en haalt een aan
         teller += 1
 
     einde_character_lijst.append(begin_character_lijst[random.randint(0, (len(begin_character_lijst) - 1))])
-    character_name = einde_character_lijst[0]["name"]
+    character_names = einde_character_lijst[0]["name"].split('/') #voorkomt dat de menselijke naam van de superheroe ook met de superhero naam komt (bijv.Clark Kent)
+    character_name = character_names[0]
     print(character_name)
     return einde_character_lijst
 
