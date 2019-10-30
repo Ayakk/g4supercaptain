@@ -22,17 +22,14 @@ param = {"ts": timestamp,
 
 #hash - a md5 digest of the ts parameter, your private key and your public key (e.g. md5(ts+privateKey+publicKey)
 
-def getMarvelCharacters():#maakt verbinding met de marvel server en haalt een aantal superheroes op
+def getMarvelCharacter():#maakt verbinding met de marvel server en haalt een aantal superheroes op
     url = 'https://gateway.marvel.com:443/v1/public/characters'
     response = requests.get(url, params=param)
     response = response.json()
     text = json.dumps(response, indent=4)
-    # voor controle
     with open('characters.txt', 'w+') as f:
         f.write(text)
-
-def getMarvelCharacterHint(): #pakt 1 random superheroe met de criteria "has description"
-    with open('characters.txt', 'r') as f:
+    with open('characters.txt','r') as f:
         text = json.load(f)
     teller = 0
     begin_character_lijst = []
@@ -44,9 +41,12 @@ def getMarvelCharacterHint(): #pakt 1 random superheroe met de criteria "has des
         teller += 1
 
     einde_character_lijst.append(begin_character_lijst[random.randint(0, (len(begin_character_lijst) - 1))])
-    character_hint = einde_character_lijst[0]["description"]
     character_name = einde_character_lijst[0]["name"]
-    print(einde_character_lijst)
+    print(character_name)
+    return einde_character_lijst
 
-getMarvelCharacters()
-getMarvelCharacterHint()
+def getMarvelCharacterHint(character_lijst): #pakt 1 random superheroe met de criteria "has description"
+    character_hint = character_lijst[0]["description"]
+    print(character_hint)
+
+getMarvelCharacterHint(getMarvelCharacter())
